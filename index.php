@@ -26,7 +26,7 @@
         </section>
 
         <section>
-            <form action="ingresar.php" class="formulario centrar" id="form_login" method="GET">
+            <form action="controladores/ControladorAutenticacion.php" class="formulario centrar" id="form_login" method="POST">
                 <label for="inp_usr">Ingresar Usuario:</label><br>
                 <input type="text" name="usuarios" placeholder="Usuario" id="inp_usr">
                 <br>

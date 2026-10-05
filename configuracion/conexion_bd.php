@@ -2,18 +2,26 @@
 
 <?php
 class BaseDatos {
-    private $host = "127.0.0.1";
-    private $nombre_db = "quickorder_db";
-    private $usuario = "root";
-    private $contrasena = "TU_CONTRASEÑA_AQUI"; // Pon tu contraseña aquí
+    private $host = "gateway01.us-east-1.prod.aws.tidbcloud.com";
+    private $puerto = "4000";
+    private $nombre_db = "test"; // Puedes usar 'test' que viene por defecto
+    private $usuario = "gRosPjj5C6jQ4Rn.root";
+    private $contrasena = "jr87gH0AFqd4d9nX";
     public $conexion;
 
     public function obtenerConexion() {
         $this->conexion = null;
 
         try {
-            $this->conexion = new PDO("mysql:host=" . $this->host . ";dbname=" . $this->nombre_db . ";charset=utf8mb4", $this->usuario, $this->contrasena);
-            $this->conexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $dsn = "mysql:host=" . $this->host . ";port=" . $this->puerto . ";dbname=" . $this->nombre_db . ";charset=utf8mb4";
+            
+            $opciones = [
+                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                PDO::MYSQL_ATTR_SSL_CA => true,
+                PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => false
+            ];
+
+            $this->conexion = new PDO($dsn, $this->usuario, $this->contrasena, $opciones);
         } catch(PDOException $e) {
             echo "Error al conectarse a la base de datos";
         }
