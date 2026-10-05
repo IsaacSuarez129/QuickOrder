@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Iniciar Sesion</title>
+    <title>QuickOrder</title>
     <link rel="stylesheet" href="publico/css/style.css">
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 </head>
@@ -41,11 +41,7 @@
 
     </main>
 
-    <footer>
-        <div class="cont_abajo centrar">
-            <p>&copy; 2026 QuickOrder. Todos los derechos reservados.</p>
-        </div>
-    </footer>
+    <?php include "vistas/plantillas/footer.php";?>
 
     <script>
     $(document).ready(function(){

@@ -1,108 +1,288 @@
 /* Variables para usar en colores */
-:root{
-    --blanco: #ffffff;
-    --negro: #212121;
-    --amarillo: #ffc107;
-    --naranja: #D62F0F;
-    --gris_claro: #DFE9F3;
-    --gris: #3c3c3c;
+:root {
+  --blanco: #ffffff;
+  --negro: #212121;
+  --amarillo: #ffc107;
+  --naranja: #d62f0f;
+  --gris_claro: #dfe9f3;
+  --gris: #3c3c3c;
 }
 
-html{
-    font-size: 62.5%;
-    box-sizing: border-box;
+html {
+  font-size: 62.5%;
+  box-sizing: border-box;
 }
 
-*, *:before, *::after{
-    box-sizing: inherit;
-    margin: 0;
-    padding: 0;
+*,
+*:before,
+*::after {
+  box-sizing: inherit;
+  margin: 0;
+  padding: 0;
 }
 
-body{
-    background-image: var(--gris_claro);
-    font-size: 16px; /* 1rem= 10px */
-    color: var(--negro);
-    font-family: "Playwrite CA Guides", cursive;
-    min-height: 100%;
+body {
+  background-image: var(--gris_claro);
+  font-size: 16px; /* 1rem= 10px */
+  color: var(--negro);
+  font-family: "Playwrite CA Guides", cursive;
+  min-height: 100%;
 }
 
-.cont_header{
-    background-color: var(--naranja);
+.cont_header {
+  background-color: var(--naranja);
 }
 
-h1, h2, h3{
-    text-align: center;
+h1,
+h2,
+h3 {
+  text-align: center;
 }
 
-h1{
-    font-size: 3.8rem;
+h1 {
+  font-size: 3.8rem;
 }
 
-h2{
-    font-size: 2.8rem;
+h2 {
+  font-size: 2.8rem;
 }
 
-h3{
-    font-size: 1.8rem;
+h3 {
+  font-size: 1.8rem;
 }
 
 /* Login css */
-.cont_header h1{
-    color: var(--blanco);
-    padding: 1.5rem;
-    margin-bottom: 10rem;
+.cont_header h1 {
+  color: var(--blanco);
+  padding: 1.5rem;
+  margin-bottom: 10rem;
 }
 
-.sombra{
-    box-shadow: 0px 5px 15px 0px rgba(0,0,0,0.48);
-    background-color: var(--blanco);
-    padding: 2rem;
-    border-radius: 1rem;
+.sombra {
+  box-shadow: 0px 5px 15px 0px rgba(0, 0, 0, 0.48);
+  background-color: var(--blanco);
+  padding: 2rem;
+  border-radius: 1rem;
 }
 
-.contenedor{
-    max-width: 90rem;
-    margin: auto;
+.contenedor {
+  max-width: 90rem;
+  margin: auto;
 }
 
-.centrar{
-    text-align: center;
+.centrar {
+  text-align: center;
 }
 
-.img_login{
-    margin-top: 1.5rem;
-    margin-bottom: 1.5rem;
+.img_login {
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
 }
 
-.formulario input{
-    margin-top: 1.2rem;
-    margin-bottom: 1.4rem;
-    padding: 1rem;
-    width: 30%;
-    border-radius: 1rem;
-    border: 1px solid var(--negro);
+.formulario input {
+  margin-top: 1.2rem;
+  margin-bottom: 1.4rem;
+  padding: 1rem;
+  width: 30%;
+  border-radius: 1rem;
+  border: 1px solid var(--negro);
 }
 
-.btn{
-    margin-top: 1rem;
-    padding: 1rem 1rem;
-    font-weight: bold;
-    font-size: 1.5rem;
-    width: 22%;
-    border: .1rem solid var(--negro);
-    border-radius: .5rem;
-    background-color: var(--amarillo);
+.btn {
+  margin-top: 1rem;
+  padding: 1rem 1rem;
+  font-weight: bold;
+  font-size: 1.5rem;
+  width: 22%;
+  border: 0.1rem solid var(--negro);
+  border-radius: 0.5rem;
+  background-color: var(--amarillo);
 }
 
-.btn:hover{
-    background-color: var(--negro);
-    color: var(--blanco);
+.btn:hover {
+  background-color: var(--negro);
+  color: var(--blanco);
 }
 
-.cont_abajo{
-    background-color: var(--gris);
-    padding: 2.5rem;
-    margin-top: 10rem;
-    color: var(--blanco);
+.cont_abajo {
+  background-color: var(--gris);
+  padding: 2.5rem;
+  margin-top: 10rem;
+  color: var(--blanco);
+}
+
+.cont_pantallas {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+/* Panel de admin */
+.admin-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.card-stat {
+  text-align: center;
+}
+
+.btn-modulo {
+  display: block;
+  padding: 1.5rem;
+  text-decoration: none;
+  color: var(--negro);
+  font-weight: bold;
+  text-align: center;
+}
+
+.btn-modulo:hover {
+  background-color: var(--naranja);
+  color: var(--blanco);
+}
+
+.modulos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.tabla-contenedor {
+  margin-top: 2rem;
+}
+
+.mod_sistem {
+  margin-bottom: 1rem;
+  text-align: left;
+}
+
+/* Panel caja */
+.caja-resumen {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.card-caja {
+  background-color: #ffffff;
+  padding: 1.5rem;
+  border-radius: 8px;
+  text-align: center;
+  border-left: 5px solid var(--naranja, #d62f0f);
+}
+
+.select-pago {
+  padding: 0.4rem;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  font-size: 1.2rem;
+}
+
+.btn-cobrar {
+  background-color: #28a745;
+  color: #ffffff;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background 0.2s;
+}
+
+.btn-cobrar:hover {
+  background-color: #218838;
+}
+
+.bloque-blanco {
+  background: #ffffff;
+  padding: 1.5rem;
+  border-radius: 8px;
+}
+
+.campo-formulario {
+  margin-bottom: 1rem;
+}
+
+/* Pantalla cocina */
+.cocina-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #ffffff;
+  padding: 1.2rem 1.5rem;
+  border-radius: 8px;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.cocina-filtros {
+  display: flex;
+  gap: 0.8rem;
+}
+
+.btn-filtro {
+  padding: 0.6rem 1.2rem;
+  border: 1px solid #ccc;
+  background: #f8f9fa;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1.3rem;
+  font-weight: bold;
+}
+
+.btn-refrescar {
+  background-color: #333;
+  color: #ffffff;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1.3rem;
+  font-weight: bold;
+}
+
+.pedidos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
+}
+
+.btn-estado {
+  flex: 1;
+  padding: 0.7rem;
+  border: none;
+  border-radius: 5px;
+  font-weight: bold;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.btn-estado:hover {
+  opacity: 0.85;
+}
+
+.btn-preparar {
+  background-color: var(--naranja, #d62f0f);
+  color: #ffffff;
+}
+
+.btn-listo {
+  background-color: #28a745;
+  color: #ffffff;
+}
+
+.num_comanda {
+  color: #666;
+  font-size: 1.2rem;
+}
+
+.izq {
+  text-align: left;
 }
