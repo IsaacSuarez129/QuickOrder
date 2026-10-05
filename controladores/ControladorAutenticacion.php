@@ -41,16 +41,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 // 4. Redireccionar al dashboard correspondiente
                 switch ($primera_letra) {
                     case 'a': // Administrador (ej. admin_isaac)
-                        header("Location: ../vistas/admin/dashboard.php");
+                        header("Location: ../vistas/admin/admin.php");
                         break;
                     case 'c': // Chef / Cocina (ej. carlos)
-                        header("Location: ../vistas/cocina/dashboard.php");
+                        header("Location: ../vistas/caja/caja.php");
                         break;
                     case 'j': // Cajero / Caja (ej. juan)
-                        header("Location: ../vistas/caja/dashboard.php");
-                        break;
-                    default:  // Cliente u otros roles
-                        header("Location: ../vistas/cliente/dashboard.php");
+                        header("Location: ../vistas/cocina/cocina.php");
                         break;
                 }
                 exit();

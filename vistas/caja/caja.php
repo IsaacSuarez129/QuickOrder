@@ -1,3 +1,7 @@
+<?php 
+require_once "../../controladores/Controlador_seguridad.php";
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -15,6 +19,7 @@
 
   <main class="contenedor cont_pantallas">
 
+          <a href="../../controladores/Controlador_terminar_sesion.php">Cerrar Sesión</a>
         <!-- 1. Métricas rápidas del turno -->
         <section class="caja-resumen">
             <div class="card-caja sombra">
