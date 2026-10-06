@@ -1,5 +1,7 @@
 <?php 
 require_once "../../controladores/Controlador_seguridad.php";
+// Solo el rol de admin tiene permiso aquí
+verificarAcceso(['admin']);
 ?>
 
 <!DOCTYPE html>

@@ -1,5 +1,7 @@
 <?php 
 require_once "../../controladores/Controlador_seguridad.php";
+//Tiene permiso el cajero y el admin
+verificarAcceso(['cajero', 'admin']);
 ?>
 
 <!DOCTYPE html>

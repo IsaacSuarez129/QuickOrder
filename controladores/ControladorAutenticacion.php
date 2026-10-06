@@ -16,6 +16,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         exit();
     }
 
+
+
     $bd = new BaseDatos();
     $conexion = $bd->obtenerConexion();
 
@@ -37,17 +39,33 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
                 // 3. Obtener la primera letra del usuario para redireccionar
                 $primera_letra = strtolower(substr($fila['usuario'], 0, 1));
+                
+                //ASIGNAR EL ROL PARA LA SEGURIDAD
+                if ($primera_letra === 'a') {
+                    $_SESSION['rol'] = 'admin';
+                } elseif ($primera_letra === 'c') {
+                    $_SESSION['rol'] = 'chef';
+                } elseif ($primera_letra === 'j') { 
+                    $_SESSION['rol'] = 'cajero';
+                } else {
+                    // Si no es ninguno de los 3, lo bloqueamos
+                    echo "<script>
+                            alert('Este usuario no tiene un rol asignado en el sistema');
+                            window.location.href = '../index.php';
+                          </script>";
+                    exit();
+                }
 
                 // 4. Redireccionar al dashboard correspondiente
-                switch ($primera_letra) {
-                    case 'a': // Administrador (ej. admin_isaac)
+                switch ($_SESSION['rol']) {
+                    case 'admin': // Administrador (ej. A564735)
                         header("Location: ../vistas/admin/admin.php");
                         break;
-                    case 'c': // Chef / Cocina (ej. carlos)
-                        header("Location: ../vistas/caja/caja.php");
-                        break;
-                    case 'j': // Cajero / Caja (ej. juan)
+                    case 'chef': // Chef / Cocina (ej. C692704)
                         header("Location: ../vistas/cocina/cocina.php");
+                        break;
+                    case 'cajero': // Cajero / Caja (ej. J092384)
+                        header("Location: ../vistas/caja/caja.php");
                         break;
                 }
                 exit();

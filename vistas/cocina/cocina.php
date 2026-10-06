@@ -1,5 +1,7 @@
 <?php 
 require_once "../../controladores/Controlador_seguridad.php";
+// Tienen permiso el chef y el admin
+verificarAcceso(['chef', 'admin']);
 ?>
 
 <!DOCTYPE html>
