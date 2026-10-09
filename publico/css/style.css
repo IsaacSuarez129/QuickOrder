@@ -190,7 +190,6 @@ h3 {
   border-radius: 4px;
   cursor: pointer;
   font-weight: bold;
-  transition: background 0.2s;
 }
 
 .btn-cobrar:hover {
@@ -285,4 +284,26 @@ h3 {
 
 .izq {
   text-align: left;
+}
+
+.btns_caja-menu {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.qo-btn {
+  border: 0;
+  border-radius: 7px;
+  padding: 12px 16px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.qo-btn-light {
+  background: #f0f1f4;
+  color: #434951;
 }

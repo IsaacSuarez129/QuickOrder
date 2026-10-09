@@ -1,12 +1,12 @@
+<?php
 // Conexión a la base de datos
 
-<?php
 class BaseDatos {
     private $host = "gateway01.us-east-1.prod.aws.tidbcloud.com";
     private $puerto = "4000";
     private $nombre_db = "test";
     private $usuario = "gRosPjj5C6jQ4Rn.root";
-    private $contrasena = "jr87gH0AFqd4d9nX"; // Tu contraseña real
+    private $contrasena = "jr87gH0AFqd4d9nX";
     public $conexion;
 
     public function obtenerConexion() {

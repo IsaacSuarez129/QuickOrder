@@ -1,4 +1,4 @@
-<?php 
+<?php
 require_once "../../controladores/Controlador_seguridad.php";
 // Solo el rol de admin tiene permiso aquí
 verificarAcceso(['admin']);
@@ -20,8 +20,12 @@ verificarAcceso(['admin']);
   </header>
 
   <main class="contenedor cont_pantallas">
-        
-        <a href="../../controladores/Controlador_terminar_sesion.php">Cerrar Sesión</a>
+
+        <div class="qo-acciones-admin" style="display: flex; gap: 0.8rem; flex-wrap: wrap; margin-bottom: 1.5rem;">
+
+    <!-- Botón para cerrar sesión -->
+    <a href="../../controladores/Controlador_terminar_sesion.php" class="qo-btn qo-btn-light"> Cerrar Sesión</a>
+</div>
         <!-- 1. Tarjetas de Métricas Rápidas -->
         <section class="admin-grid">
             <div class="card-stat sombra">
@@ -45,7 +49,7 @@ verificarAcceso(['admin']);
         <!-- 2. Accesos Rápidos a Módulos del Sistema -->
         <h2 class="mod_sistem">Módulos del Sistema</h2>
         <section class="modulos-grid">
-            <a href="../menu/menu.php" class="btn-modulo sombra">
+            <a href="#" class="btn-modulo sombra">
                 <span>🍽️</span>
                 <span>Gestionar Menú</span>
             </a>
@@ -53,7 +57,7 @@ verificarAcceso(['admin']);
                 <span>👥</span>
                 <span>Usuarios / Empleados</span>
             </a>
-            <a href="../reportes/reportes.php" class="btn-modulo sombra">
+            <a href="#" class="btn-modulo sombra">
                 <span>📊</span>
                 <span>Reportes y Ventas</span>
             </a>

@@ -1,4 +1,4 @@
-<?php 
+<?php
 require_once "../../controladores/Controlador_seguridad.php";
 //Tiene permiso el cajero y el admin
 verificarAcceso(['cajero', 'admin']);
@@ -21,7 +21,12 @@ verificarAcceso(['cajero', 'admin']);
 
   <main class="contenedor cont_pantallas">
 
-          <a href="../../controladores/Controlador_terminar_sesion.php">Cerrar Sesión</a>
+          <div class="btns_caja-menu">
+    <!-- Enlace al catálogo del menú -->
+    <a href="../menu/menu.php" class="qo-btn qo-btn-light">Ver Menú</a>
+    <!-- Enlace para cerrar sesión -->
+    <a href="../../controladores/Controlador_terminar_sesion.php" class="qo-btn qo-btn-light">Cerrar Sesión</a>
+</div>
         <!-- 1. Métricas rápidas del turno -->
         <section class="caja-resumen">
             <div class="card-caja sombra">
@@ -110,8 +115,10 @@ verificarAcceso(['cajero', 'admin']);
                 </table>
             </div>
 <br><br>
-            <!-- Calculadora rápida / Acciones de caja -->
-            <div class="bloque-blanco sombra">
+            <!-- Las siguientes líneas son para en un futuro implementar un formulario de las cuentas por cobrar al hacer click en el botón "cobrar", pero por ahora se mantendrán comentadas para no generar confusión. -->
+
+            <!-- Calculadora de cuentas por cobrar -->
+            <!-- <div class="bloque-blanco sombra">
                 <h2>Cobro Manual / Cambio</h2>
                 <form onsubmit="event.preventDefault();">
                     <div class="campo-formulario">
@@ -128,8 +135,26 @@ verificarAcceso(['cajero', 'admin']);
                     </div>
                     <button type="button" class="btn-corte">Hacer Corte de Turno</button>
                 </form>
-            </div>
+            </div> -->
 
+            <div class="bloque-blanco sombra">
+                <h2>Corte de caja</h2>
+                <form onsubmit="event.preventDefault();">
+                    <div class="campo-formulario">
+                        <label for="monto_total">Usuario:</label>
+                        <input type="number" id="monto_total" placeholder="0.00" value="320.00" readonly>
+                    </div>
+                    <div class="campo-formulario">
+                        <label for="monto_recibido">Efectivo Recibido ($):</label>
+                        <input type="number" id="monto_recibido" placeholder="Ej. 500">
+                    </div>
+                    <div class="campo-formulario">
+                        <label for="cambio_devolver">Dinero por Tarjeta Recibido ($):</label>
+                        <input type="text" id="cambio_devolver" placeholder="$0.00" readonly >
+                    </div>
+                    <button type="button" class="btn-corte">Hacer Corte de Turno</button>
+                </form>
+           </div>
         </section>
 
     </main>
