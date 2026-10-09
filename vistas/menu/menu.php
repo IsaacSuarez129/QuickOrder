@@ -3,6 +3,9 @@
 require_once "../../controladores/Controlador_seguridad.php";
 verificarAcceso(['admin', 'cajero']);
 
+// 2. Determinar si el usuario conectado tiene rol de administrador
+$esAdmin = isset($_SESSION['rol']) && $_SESSION['rol'] === 'admin';
+$enlaceAdmin = $esAdmin ? '../admin/admin.php' : 'menu.php';
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -33,6 +36,11 @@ verificarAcceso(['admin', 'cajero']);
                 <div style="display: flex; gap: 0.6rem; align-items: center; flex-wrap: wrap;">
                     <!-- Botón para regresar a Caja -->
                     <a href="../caja/caja.php" class="qo-btn qo-btn-light" style="text-decoration: none;">⬅ Volver a Caja</a>
+
+                    <!-- Botón restringido: Lleva a Admin si es admin, o recarga menu.php si es cajero -->
+                    <a href="<?= $enlaceAdmin ?>" class="qo-btn qo-btn-light" style="text-decoration: none;">
+                        ⚙️ Panel de Admin
+                    </a>
 
                     <!-- Botón para agregar producto -->
                     <button class="qo-btn qo-btn-primary" id="btnNuevo">＋ Agregar producto</button>
@@ -84,7 +92,7 @@ verificarAcceso(['admin', 'cajero']);
                         <option value="inactivo">No disponible</option>
                     </select>
                 </div>
-
+                
                 <div class="qo-table-wrap">
                     <table>
                         <thead>
@@ -119,13 +127,13 @@ verificarAcceso(['admin', 'cajero']);
             </div>
             <form id="formProducto">
                 <input type="hidden" id="productoId">
-
+                
                 <label for="nombreProducto">Nombre del producto <span>*</span></label>
                 <input id="nombreProducto" maxlength="80" required placeholder="Ej. Hamburguesa clásica">
-
+                
                 <label for="descripcionProducto">Descripción</label>
                 <textarea id="descripcionProducto" maxlength="240" rows="3" placeholder="Describe brevemente el producto"></textarea>
-
+                
                 <div class="qo-form-row">
                     <div>
                         <label for="precioProducto">Precio (MXN) <span>*</span></label>

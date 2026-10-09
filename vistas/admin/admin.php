@@ -49,7 +49,7 @@ verificarAcceso(['admin']);
         <!-- 2. Accesos Rápidos a Módulos del Sistema -->
         <h2 class="mod_sistem">Módulos del Sistema</h2>
         <section class="modulos-grid">
-            <a href="#" class="btn-modulo sombra">
+            <a href="../menu/menu.php" class="btn-modulo sombra">
                 <span>🍽️</span>
                 <span>Gestionar Menú</span>
             </a>
