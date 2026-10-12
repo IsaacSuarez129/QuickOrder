@@ -43,6 +43,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             if ($contrasena_ingresada === $fila['contrasena']) {
                 $_SESSION['token_seguridad'] = bin2hex(random_bytes(16));
                 $_SESSION['usuario_activo'] = $fila['usuario'];
+                $_SESSION['id_usuario'] = $fila['id'];
 
                 $primera_letra = strtolower(substr($fila['usuario'], 0, 1));
 
