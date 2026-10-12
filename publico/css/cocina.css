@@ -1,0 +1,222 @@
+
+/* 1. Expandir el contenedor a lo ancho de la pantalla */
+.cocina-contenedor {
+  width: 96%;
+  max-width: 1800px; /* Aumentado para pantallas grandes */
+  margin: 0 auto;
+  padding: 1.5rem 1rem;
+}
+
+/* 2. Forzar que la barra de herramientas use todo el ancho y tenga más altura */
+.cocina-toolbar {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #ffffff;
+  padding: 1.2rem 1.8rem; /* Más espaciado interno */
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  margin-bottom: 2rem;
+  box-sizing: border-box;
+}
+
+/* 3. Hacer los botones de filtro más grandes y legibles */
+.btn-filtro {
+  background: #f1f2f6;
+  border: 1px solid #dfe4ea;
+  padding: 0.8rem 1.4rem; /* Botones más altos y anchos */
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 1.5rem; /* Letra más grande */
+  color: #57606f;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+/* 4. Aumentar el botón de actualizar */
+.btn-refrescar {
+  background: #ffffff;
+  border: 2px solid #2f3542;
+  color: #2f3542;
+  padding: 0.8rem 1.4rem;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+/* 5. Aumentar el tamaño mínimo de los tickets para que no queden apretados */
+.pedidos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); /* De 290px a 340px */
+  gap: 1.8rem;
+  align-items: start;
+}
+
+/* Tarjeta de ticket base */
+.tarjeta-ticket {
+  background: #ffffff;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+  display: flex;
+  flex-direction: column;
+  min-height: 280px;
+  border: 1px solid #edf2f7;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.tarjeta-ticket:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.09);
+}
+
+/* Cabecera del ticket según estado */
+.ticket-header {
+  padding: 1rem 1.2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+/* Estado Pendiente: Rojo sólido */
+.tarjeta-ticket.pendiente .ticket-header {
+  background-color: #eb4d4b;
+  color: #ffffff;
+}
+
+/* Estado En Preparación: Amarillo sólido */
+.tarjeta-ticket.en_preparacion .ticket-header {
+  background-color: #f9ca24;
+  color: #222f3e;
+}
+
+.header-izq .ticket-mesa {
+  font-size: 1.15rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin: 0;
+}
+
+.header-izq .ticket-orden {
+  font-size: 0.92rem;
+  font-weight: 600;
+  margin: 3px 0 2px 0;
+}
+
+.header-izq .ticket-hora {
+  font-size: 0.8rem;
+  opacity: 0.88;
+}
+
+.header-der {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+}
+
+.badge-tipo {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 20px;
+  border: 1.5px solid currentColor;
+  text-transform: capitalize;
+}
+
+.ticket-tiempo {
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+/* Cuerpo de la comanda */
+.ticket-body {
+  padding: 1.2rem;
+  flex-grow: 1;
+}
+
+.lista-items {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.lista-items li {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 0.9rem;
+  font-size: 0.95rem;
+  line-height: 1.35;
+}
+
+.lista-items li:last-child {
+  margin-bottom: 0;
+}
+
+.item-cant {
+  font-weight: 800;
+  color: #2d3436;
+  min-width: 24px;
+}
+
+.item-info {
+  flex-grow: 1;
+}
+
+.item-nombre {
+  font-weight: 600;
+  color: #2d3436;
+}
+
+.item-obs {
+  display: block;
+  font-size: 0.82rem;
+  color: #d63031;
+  font-weight: 500;
+  font-style: italic;
+  margin-top: 2px;
+}
+
+/* Botones de acción inferiores */
+.ticket-footer {
+  padding: 0.8rem 1.2rem 1.2rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  background-color: #ffffff;
+}
+
+.btn-kds {
+  padding: 10px 0;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s ease;
+  text-align: center;
+}
+
+/* Botón Start/Finish activo */
+.btn-kds.activo {
+  background-color: #1e272e;
+  color: #ffffff;
+}
+
+.btn-kds.activo:hover {
+  background-color: #10ac84;
+}
+
+/* Botón bloqueado */
+.btn-kds.bloqueado {
+  background-color: #f1f2f6;
+  color: #ced6e0;
+  cursor: not-allowed;
+  pointer-events: none;
+}

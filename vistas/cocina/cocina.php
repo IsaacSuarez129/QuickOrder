@@ -1,16 +1,15 @@
 <?php
 require_once "../../controladores/Controlador_seguridad.php";
-// Tienen permiso el chef y el admin
 verificarAcceso(['chef', 'admin']);
 ?>
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cocina</title>
+  <title>Monitor de Cocina - QuickOrder</title>
   <link rel="stylesheet" href="../../publico/css/style.css">
+  <link rel="stylesheet" href="../../publico/css/cocina.css">
 </head>
 <body>
   <header>
@@ -19,21 +18,21 @@ verificarAcceso(['chef', 'admin']);
     </div>
   </header>
 
-  <main class="contenedor cont_pantallas">
+  <main class="cocina-contenedor">
 
-    <!-- Barra superior alineada a la derecha -->
+    <!-- Usuario autenticado -->
     <div class="qo-acciones-admin barra-usuario-derecha">
       <div class="qo-user-dropdown">
-        <button type="button" class="qo-role-btn" id="btnDropdownUsuario" aria-expanded="false" aria-haspopup="true">
+        <button type="button" class="qo-role-btn" id="btnDropdownUsuario" aria-expanded="false">
           <span class="qo-role-dot">●</span>
-          <span class="qo-role-text"><?= htmlspecialchars($_SESSION['rol'] ?? 'Usuario') ?></span>
+          <span class="qo-role-text"><?= htmlspecialchars($_SESSION['rol'] ?? 'Chef') ?></span>
           <span class="qo-role-arrow">▼</span>
         </button>
 
         <div class="qo-dropdown-menu" id="menuUsuario" hidden>
           <div class="qo-dropdown-header">
             <small>Conectado como</small>
-            <strong><?= htmlspecialchars($_SESSION['usuario_activo'] ?? $_SESSION['rol'] ?? 'Usuario') ?></strong>
+            <strong><?= htmlspecialchars($_SESSION['usuario_activo'] ?? 'Chef') ?></strong>
           </div>
           <hr class="qo-dropdown-divider">
           <a href="../../controladores/Controlador_terminar_sesion.php" id="btnCerrarSesion" class="qo-dropdown-item qo-item-logout">
@@ -43,118 +42,28 @@ verificarAcceso(['chef', 'admin']);
       </div>
     </div>
 
-    <!-- Barra de herramientas: Filtros y refrescar -->
-    <section class="cocina-toolbar sombra">
+    <!-- Barra de Filtros -->
+    <section class="cocina-toolbar">
       <div class="cocina-filtros">
-        <button type="button" class="btn-filtro activo">Todos (4)</button>
-        <button type="button" class="btn-filtro">Pendientes (2)</button>
-        <button type="button" class="btn-filtro">En Preparación (2)</button>
+        <button type="button" class="btn-filtro activo" data-filtro="todos">Todos (<span id="cont-todos">0</span>)</button>
+        <button type="button" class="btn-filtro" data-filtro="pendiente">Pendientes (<span id="cont-pendientes">0</span>)</button>
+        <button type="button" class="btn-filtro" data-filtro="en_preparacion">En Preparación (<span id="cont-preparacion">0</span>)</button>
       </div>
       <div>
-        <button type="button" class="btn-refrescar">🔄 Actualizar Pedidos</button>
+        <button type="button" class="btn-refrescar" id="btnRefrescarPedidos">🔄 Actualizar Pedidos</button>
       </div>
     </section>
 
-    <!-- Cuadrícula de comandas / pedidos en preparación -->
-    <section class="pedidos-grid">
-
-      <!-- Tarjeta 1: Demorada / En espera -->
-      <div class="comanda-card sombra">
-        <div class="comanda-header">
-          <h3>Mesa 3 <small class="num_comanda">(#104)</small></h3>
-          <span class="tiempo-badge demorado">⏱️ 18 min</span>
-        </div>
-        <div class="comanda-cuerpo">
-          <ul class="lista-platillos">
-            <li class="item-platillo">
-              <span class="platillo-nombre">2x Hamburguesa Clásica</span>
-              <span class="platillo-obs">⚠️ Una sin cebolla ni pepinillos</span>
-            </li>
-            <li class="item-platillo">
-              <span class="platillo-nombre">1x Orden de Papas Gajo</span>
-            </li>
-            <li class="item-platillo">
-              <span class="platillo-nombre">1x Refresco Cola</span>
-            </li>
-          </ul>
-        </div>
-        <div class="comanda-footer">
-          <button type="button" class="btn-estado btn-preparar">Empezar Preparación</button>
-        </div>
-      </div>
-
-      <!-- Tarjeta 2: En preparación -->
-      <div class="comanda-card en-proceso sombra">
-        <div class="comanda-header">
-          <h3>Mesa 5 <small class="num_comanda">(#105)</small></h3>
-          <span class="tiempo-badge">⏱️ 8 min</span>
-        </div>
-        <div class="comanda-cuerpo">
-          <ul class="lista-platillos">
-            <li class="item-platillo">
-              <span class="platillo-nombre">1x Tacos de Pastor (Orden)</span>
-              <span class="platillo-obs">⚠️ Con todo (piña, cilantro y cebolla)</span>
-            </li>
-            <li class="item-platillo">
-              <span class="platillo-nombre">1x Agua de Horchata 1L</span>
-            </li>
-          </ul>
-        </div>
-        <div class="comanda-footer">
-          <button type="button" class="btn-estado btn-listo">Marcar Listo</button>
-        </div>
-      </div>
-
-      <!-- Tarjeta 3: En preparación -->
-      <div class="comanda-card en-proceso sombra">
-        <div class="comanda-header">
-          <h3>Para Llevar <small class="num_comanda">(#106)</small></h3>
-          <span class="tiempo-badge">⏱️ 5 min</span>
-        </div>
-        <div class="comanda-cuerpo">
-          <ul class="lista-platillos">
-            <li class="item-platillo">
-              <span class="platillo-nombre">1x Pizza Mediana Peperoni</span>
-            </li>
-            <li class="item-platillo">
-              <span class="platillo-nombre">6x Alitas BBQ</span>
-              <span class="platillo-obs">⚠️ Salsa aparte</span>
-            </li>
-          </ul>
-        </div>
-        <div class="comanda-footer">
-          <button type="button" class="btn-estado btn-listo">Marcar Listo</button>
-        </div>
-      </div>
-
-      <!-- Tarjeta 4: Recién entrada -->
-      <div class="comanda-card sombra">
-        <div class="comanda-header">
-          <h3>Mesa 1 <small class="num_comanda">(#107)</small></h3>
-          <span class="tiempo-badge">⏱️ 2 min</span>
-        </div>
-        <div class="comanda-cuerpo">
-          <ul class="lista-platillos">
-            <li class="item-platillo">
-              <span class="platillo-nombre">1x Ensalada César con Pollo</span>
-            </li>
-            <li class="item-platillo">
-              <span class="platillo-nombre">1x Té Helado</span>
-            </li>
-          </ul>
-        </div>
-        <div class="comanda-footer">
-          <button type="button" class="btn-estado btn-preparar">Empezar Preparación</button>
-        </div>
-      </div>
-
+    <!-- Contenedor donde se inyectan las tarjetas dinámicas -->
+    <section class="pedidos-grid" id="contenedor-comandas">
+      <!-- Se llena por JavaScript -->
     </section>
 
   </main>
 
   <?php include "../../vistas/plantillas/footer.php"; ?>
 
-  <!-- Script para la interacción del dropdown y confirmación -->
   <script src="../../publico/js/dropdown_usuario.js"></script>
+  <script src="../../publico/js/cocina_kanban.js"></script>
 </body>
 </html>
