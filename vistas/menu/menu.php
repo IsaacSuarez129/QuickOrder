@@ -1,11 +1,10 @@
 <?php
-// 1. Control de acceso: solo entran admin y cajero
+// 1. Control de acceso: solo entran admin y mesero
 require_once "../../controladores/Controlador_seguridad.php";
-verificarAcceso(['admin', 'cajero']);
+verificarAcceso(['admin', 'mesero']);
 
 // 2. Determinar si el usuario conectado tiene rol de administrador
 $esAdmin = isset($_SESSION['rol']) && $_SESSION['rol'] === 'admin';
-$enlaceAdmin = $esAdmin ? '../admin/admin.php' : 'menu.php';
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -24,7 +23,26 @@ $enlaceAdmin = $esAdmin ? '../admin/admin.php' : 'menu.php';
                     <span class="qo-eyebrow">ADMINISTRACIÓN</span>
                     <h1>Catálogo del menú</h1>
                 </div>
-                <span class="qo-role">● <?= htmlspecialchars($_SESSION['rol'] ?? 'Usuario') ?></span>
+
+                <!-- Menú interactivo de rol / usuario -->
+                <div class="qo-user-dropdown">
+                    <button type="button" class="qo-role-btn" id="btnDropdownUsuario" aria-expanded="false" aria-haspopup="true">
+                        <span class="qo-role-dot">●</span>
+                        <span class="qo-role-text"><?= htmlspecialchars($_SESSION['rol'] ?? 'Usuario') ?></span>
+                        <span class="qo-role-arrow">▼</span>
+                    </button>
+
+                    <div class="qo-dropdown-menu" id="menuUsuario" hidden>
+                        <div class="qo-dropdown-header">
+                            <small>Conectado como</small>
+                            <strong><?= htmlspecialchars($_SESSION['usuario_activo'] ?? $_SESSION['rol'] ?? 'Usuario') ?></strong>
+                        </div>
+                        <hr class="qo-dropdown-divider">
+                        <a href="../../controladores/Controlador_terminar_sesion.php" id="btnCerrarSesion" class="qo-dropdown-item qo-item-logout">
+                            🚪 Cerrar sesión
+                        </a>
+                    </div>
+                </div>
             </header>
 
             <!-- Acciones y navegación -->
@@ -33,14 +51,16 @@ $enlaceAdmin = $esAdmin ? '../admin/admin.php' : 'menu.php';
                     <h2>Productos</h2>
                     <p>Administra los platillos y bebidas disponibles para los pedidos.</p>
                 </div>
-                <div style="display: flex; gap: 0.6rem; align-items: center; flex-wrap: wrap;">
+                <div class="qo-intro-actions">
                     <!-- Botón para regresar a Caja -->
-                    <a href="../caja/caja.php" class="qo-btn qo-btn-light" style="text-decoration: none;">⬅ Volver a Caja</a>
+                    <a href="../caja/caja.php" class="qo-btn qo-btn-light qo-link-btn">⬅ Volver a Caja</a>
 
-                    <!-- Botón restringido: Lleva a Admin si es admin, o recarga menu.php si es cajero -->
-                    <a href="<?= $enlaceAdmin ?>" class="qo-btn qo-btn-light" style="text-decoration: none;">
-                        ⚙️ Panel de Admin
-                    </a>
+                    <!-- Botón visible ÚNICAMENTE para administradores -->
+                    <?php if ($esAdmin): ?>
+                        <a href="../admin/admin.php" class="qo-btn qo-btn-light qo-link-btn">
+                            ⚙️ Panel de Admin
+                        </a>
+                    <?php endif; ?>
 
                     <!-- Botón para agregar producto -->
                     <button class="qo-btn qo-btn-primary" id="btnNuevo">＋ Agregar producto</button>
@@ -85,6 +105,10 @@ $enlaceAdmin = $esAdmin ? '../admin/admin.php' : 'menu.php';
                         <option>Bebidas</option>
                         <option>Postres</option>
                         <option>Entradas</option>
+                        <option>Vegetariana</option>
+                        <option>Vegana</option>
+                        <option>Con azúcar</option>
+                        <option>Sin azúcar</option>
                     </select>
                     <select id="filtroEstado" aria-label="Filtrar por disponibilidad">
                         <option value="">Todos los estados</option>
@@ -92,7 +116,7 @@ $enlaceAdmin = $esAdmin ? '../admin/admin.php' : 'menu.php';
                         <option value="inactivo">No disponible</option>
                     </select>
                 </div>
-                
+
                 <div class="qo-table-wrap">
                     <table>
                         <thead>
@@ -127,13 +151,13 @@ $enlaceAdmin = $esAdmin ? '../admin/admin.php' : 'menu.php';
             </div>
             <form id="formProducto">
                 <input type="hidden" id="productoId">
-                
+
                 <label for="nombreProducto">Nombre del producto <span>*</span></label>
                 <input id="nombreProducto" maxlength="80" required placeholder="Ej. Hamburguesa clásica">
-                
+
                 <label for="descripcionProducto">Descripción</label>
                 <textarea id="descripcionProducto" maxlength="240" rows="3" placeholder="Describe brevemente el producto"></textarea>
-                
+
                 <div class="qo-form-row">
                     <div>
                         <label for="precioProducto">Precio (MXN) <span>*</span></label>
@@ -147,6 +171,10 @@ $enlaceAdmin = $esAdmin ? '../admin/admin.php' : 'menu.php';
                             <option>Bebidas</option>
                             <option>Postres</option>
                             <option>Entradas</option>
+                            <option>Vegetariana</option>
+                            <option>Vegana</option>
+                            <option>Con azúcar</option>
+                            <option>Sin azúcar</option>
                         </select>
                     </div>
                 </div>
@@ -163,7 +191,7 @@ $enlaceAdmin = $esAdmin ? '../admin/admin.php' : 'menu.php';
         </section>
     </div>
 
-    <!-- Script que interactúa con la base de datos -->
-    <script src="../../publico/js/menu.js?v=3"></script>
+    <!-- Script de lógica e interacción -->
+    <script src="../../publico/js/menu.js?v=5"></script>
 </body>
 </html>

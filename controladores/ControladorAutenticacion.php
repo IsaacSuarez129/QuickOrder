@@ -8,6 +8,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $usuario_ingresado = isset($_POST["usuarios"]) ? trim($_POST["usuarios"]) : '';
     $contrasena_ingresada = isset($_POST["contrasena"]) ? trim($_POST["contrasena"]) : '';
 
+    // 1. Validar campos vacíos
     if (empty($usuario_ingresado) || empty($contrasena_ingresada)) {
         echo "<script>
                 alert('Por favor, llena todos los campos');
@@ -16,13 +17,20 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         exit();
     }
 
-
+    // 2. Validación de mínimo 8 caracteres (usando strlen nativo)
+    if (strlen($contrasena_ingresada) < 8) {
+        echo "<script>
+                alert('La contraseña debe tener un mínimo de 8 caracteres.');
+                window.location.href = '../index.php';
+              </script>";
+        exit();
+    }
 
     $bd = new BaseDatos();
     $conexion = $bd->obtenerConexion();
 
     if ($conexion) {
-        // 1. Verificar si el usuario existe en la base de datos
+        // Consultar usuario de forma segura con sentencia preparada
         $query = "SELECT * FROM usuarios WHERE usuario = :usuario LIMIT 1";
         $stmt = $conexion->prepare($query);
         $stmt->bindParam(":usuario", $usuario_ingresado);
@@ -31,24 +39,21 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         if ($stmt->rowCount() > 0) {
             $fila = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            // Validar la contraseña
+            // Validar la contraseña ingresada con la almacenada
             if ($contrasena_ingresada === $fila['contrasena']) {
-                // 2. Generar token de seguridad y registrar la sesión
                 $_SESSION['token_seguridad'] = bin2hex(random_bytes(16));
                 $_SESSION['usuario_activo'] = $fila['usuario'];
 
-                // 3. Obtener la primera letra del usuario para redireccionar
                 $primera_letra = strtolower(substr($fila['usuario'], 0, 1));
-                
-                //ASIGNAR EL ROL PARA LA SEGURIDAD
+
+                // Asignar el rol según la letra inicial
                 if ($primera_letra === 'a') {
                     $_SESSION['rol'] = 'admin';
                 } elseif ($primera_letra === 'c') {
                     $_SESSION['rol'] = 'chef';
-                } elseif ($primera_letra === 'j') { 
-                    $_SESSION['rol'] = 'cajero';
+                } elseif ($primera_letra === 'j' || $primera_letra === 'm') {
+                    $_SESSION['rol'] = 'mesero';
                 } else {
-                    // Si no es ninguno de los 3, lo bloqueamos
                     echo "<script>
                             alert('Este usuario no tiene un rol asignado en el sistema');
                             window.location.href = '../index.php';
@@ -56,15 +61,15 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                     exit();
                 }
 
-                // 4. Redireccionar al dashboard correspondiente
+                // Redireccionar al dashboard correspondiente
                 switch ($_SESSION['rol']) {
-                    case 'admin': // Administrador (ej. A564735)
+                    case 'admin':
                         header("Location: ../vistas/admin/admin.php");
                         break;
-                    case 'chef': // Chef / Cocina (ej. C692704)
+                    case 'chef':
                         header("Location: ../vistas/cocina/cocina.php");
                         break;
-                    case 'cajero': // Cajero / Caja (ej. J092384)
+                    case 'mesero':
                         header("Location: ../vistas/caja/caja.php");
                         break;
                 }
@@ -77,7 +82,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 exit();
             }
         } else {
-            // El usuario no existe en la base de datos
             echo "<script>
                     alert('El usuario no existe');
                     window.location.href = '../index.php';

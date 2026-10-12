@@ -59,4 +59,11 @@ class Producto {
             ':id'         => $id
         ]);
     }
+
+    public function eliminar($id) {
+        $sql = "DELETE FROM productos WHERE id = :id";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+        return $stmt->execute();
+    }
 }

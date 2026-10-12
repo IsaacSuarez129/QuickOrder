@@ -20,7 +20,7 @@ function verificarAcceso($roles_permitidos) {
 
     // Si el rol del usuario NO está en la lista de los que pueden ver esta pantalla...
     if (!in_array($mi_rol, $roles_permitidos)) {
-        
+
         // Lo mandamos de regreso a SU pantalla correspondiente
         switch ($mi_rol) {
             case 'admin':
@@ -29,7 +29,7 @@ function verificarAcceso($roles_permitidos) {
             case 'chef':
                 header('Location: ../cocina/cocina.php');
                 break;
-            case 'cajero':
+            case 'mesero':
                 header('Location: ../caja/caja.php');
                 break;
             default:

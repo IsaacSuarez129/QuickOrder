@@ -9,12 +9,12 @@
 </head>
 <body>
     <header>
-        <div class="cont_header">
+        <div class="login_header">
             <h1>Bienvenido a QuickOrder</h1>
         </div>
     </header>
 
-    <main class="contenedor sombra">
+    <main class="contenedor contenedor-login sombra">
         <section>
             <div>
             <h2>Iniciar Sesion</h2>
@@ -32,7 +32,8 @@
                 <br>
 
                 <label for="inp_con">Ingresar Contraseña:</label><br>
-                <input type="password" name="contrasena" placeholder="Contraseña" id="inp_con">
+                <!-- Agregado minlength="8" para permitir caracteres especiales y exigir mínimo 8 -->
+                <input type="password" name="contrasena" placeholder="Contraseña" id="inp_con" minlength="8">
 
                 <br>
                 <button class="btn centrar" type="submit" id="btn_enviar">Ingresar</button>
@@ -45,7 +46,8 @@
 
     <script>
     $(document).ready(function(){
-      $("#btn_enviar").click(function(){
+      $("#btn_enviar").click(function(e){
+        e.preventDefault();
 
         let nombre = $("#inp_usr").val().trim();
         let contrasena = $("#inp_con").val().trim();
@@ -62,6 +64,12 @@
           return false;
         }
 
+        // Validación de mínimo 8 caracteres antes de enviar
+        if(contrasena.length < 8){
+          alert("La contraseña debe tener al menos 8 caracteres");
+          $("#inp_con").focus();
+          return false;
+        }
 
         $("#form_login")[0].submit();
       });

@@ -34,7 +34,6 @@
 
       const datos = await res.json();
 
-      // Si el backend devolvió un error de conexión
       if (datos.error) {
         console.error("Error devuelto por el backend:", datos.error);
         $("tablaProductos").innerHTML =
@@ -42,7 +41,6 @@
         return;
       }
 
-      // Mapear los datos de la base de datos a los tipos que usa la vista
       productos = datos.map((p) => ({
         id: Number(p.id || p.id_producto),
         nombre: p.nombre,
@@ -98,9 +96,17 @@
       </td>
       <td>
         <div class="qo-actions">
-          <button class="qo-action" data-editar="${p.id}" type="button">Editar</button>
-          <button class="qo-action" data-toggle="${p.id}" type="button">
+          <button class="qo-action" data-editar="${p.id}" type="button" title="Editar producto">
+            <img src="../../publico/img/icono_editar.png" alt="Editar" class="qo-action-icon">
+            Editar
+          </button>
+          <button class="qo-action" data-toggle="${p.id}" type="button" title="Cambiar disponibilidad">
+            <img src="../../publico/img/icono_desactivar.png" alt="Estado" class="qo-action-icon">
             ${p.disponible ? "Desactivar" : "Activar"}
+          </button>
+          <button class="qo-action qo-action-danger" data-eliminar="${p.id}" data-nombre="${escapar(p.nombre)}" type="button" title="Eliminar de la base de datos">
+            <img src="../../publico/img/icono_eliminar.png" alt="Eliminar" class="qo-action-icon">
+            Eliminar
           </button>
         </div>
       </td>
@@ -113,7 +119,6 @@
         '<tr><td colspan="5" style="text-align:center;padding:30px;color:#737982">No se encontraron productos con esos filtros.</td></tr>';
     }
 
-    // Actualizar contadores superiores
     if ($("totalProductos")) $("totalProductos").textContent = productos.length;
     if ($("totalDisponibles"))
       $("totalDisponibles").textContent = productos.filter(
@@ -128,7 +133,47 @@
         `Mostrando ${lista.length} de ${productos.length} productos`;
   }
 
-  // 3. Control del Modal
+  // 3. Menú interactivo de rol / usuario
+  const btnDropdown = $("btnDropdownUsuario");
+  const menuUsuario = $("menuUsuario");
+  const btnLogout = $("btnCerrarSesion");
+
+  if (btnLogout) {
+    btnLogout.addEventListener("click", (e) => {
+      const confirmar = confirm("¿Estás seguro de que deseas cerrar sesión?");
+      if (!confirmar) {
+        e.preventDefault();
+      }
+    });
+  }
+
+  const contenedorDropdown = btnDropdown
+    ? btnDropdown.closest(".qo-user-dropdown")
+    : null;
+
+  if (btnDropdown && menuUsuario) {
+    btnDropdown.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const estaOculto = menuUsuario.hidden;
+      menuUsuario.hidden = !estaOculto;
+      if (contenedorDropdown) {
+        contenedorDropdown.classList.toggle("abierto", estaOculto);
+      }
+      btnDropdown.setAttribute("aria-expanded", String(estaOculto));
+    });
+
+    document.addEventListener("click", (e) => {
+      if (!menuUsuario.hidden && !menuUsuario.contains(e.target)) {
+        menuUsuario.hidden = true;
+        if (contenedorDropdown) {
+          contenedorDropdown.classList.remove("abierto");
+        }
+        btnDropdown.setAttribute("aria-expanded", "false");
+      }
+    });
+  }
+
+  // 4. Control del Modal
   function abrirModal(p = null) {
     $("formProducto").reset();
     $("productoId").value = p ? p.id : "";
@@ -148,7 +193,6 @@
     document.body.style.overflow = "";
   }
 
-  // Eventos de botones del modal
   $("btnNuevo").addEventListener("click", () => abrirModal());
   $("btnCerrar").addEventListener("click", cerrarModal);
   $("btnCancelar").addEventListener("click", cerrarModal);
@@ -172,10 +216,11 @@
     }
   });
 
-  // 4. Delegación de eventos para la tabla (Editar / Alternar disponibilidad)
+  // 5. Delegación de eventos para la tabla (Editar / Alternar / Eliminar)
   $("tablaProductos").addEventListener("click", async (e) => {
     const editar = e.target.closest("[data-editar]");
     const toggle = e.target.closest("[data-toggle]");
+    const eliminar = e.target.closest("[data-eliminar]");
 
     if (editar) {
       const p = productos.find((x) => x.id === Number(editar.dataset.editar));
@@ -188,18 +233,57 @@
       if (p) {
         const estadoActual = p.disponible ? 1 : 0;
         try {
-          await fetch(
+          const res = await fetch(
             `${URL_API}?accion=toggle&id=${id}&estado=${estadoActual}`,
           );
-          await cargarProductos();
+          const data = await res.json();
+          if (data.exito) {
+            await cargarProductos();
+          } else {
+            alert(data.error || "Error al actualizar disponibilidad");
+          }
         } catch (error) {
           console.error("Error al alternar disponibilidad:", error);
         }
       }
     }
+
+    if (eliminar) {
+      const id = Number(eliminar.dataset.eliminar);
+      const nombre = eliminar.dataset.nombre;
+
+      const confirmacion = confirm(
+        `¿Estás seguro de que deseas eliminar permanentemente el producto "${nombre}"?\nEsta acción lo borrará de la base de datos.`,
+      );
+
+      if (confirmacion) {
+        try {
+          const res = await fetch(`${URL_API}?accion=eliminar&id=${id}`);
+          const texto = await res.text();
+
+          let data;
+          try {
+            data = JSON.parse(texto);
+          } catch (errJson) {
+            console.error("Respuesta devuelta por PHP:", texto);
+            alert("Error en el servidor PHP:\n\n" + texto.slice(0, 300));
+            return;
+          }
+
+          if (data.exito) {
+            await cargarProductos();
+          } else {
+            alert(data.error || "No se pudo eliminar el producto.");
+          }
+        } catch (error) {
+          console.error("Error al eliminar el producto:", error);
+          alert("Error de red: no se pudo enviar la petición.");
+        }
+      }
+    }
   });
 
-  // 5. Enviar formulario (Crear o Modificar)
+  // 6. Enviar formulario (Crear o Modificar)
   $("formProducto").addEventListener("submit", async (e) => {
     e.preventDefault();
     const id = $("productoId").value;
@@ -233,6 +317,6 @@
     }
   });
 
-  // Ejecución inicial al cargar la página
+  // Carga inicial
   cargarProductos();
 })();

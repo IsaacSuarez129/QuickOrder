@@ -3,15 +3,14 @@
 // 1. Indicar que la respuesta siempre será en formato JSON
 header('Content-Type: application/json; charset=utf-8');
 
-// Iniciar sesión para control de acceso (cuando implementes roles de usuario)
+// Iniciar sesión para control de acceso
 session_start();
 
-// Cuando se requiera restringir acceso a solo ciertos roles, descomentar estas líneas:
-// if (!isset($_SESSION['rol']) || !in_array($_SESSION['rol'], ['admin', 'mesero'])) {
-//     http_response_code(403);
-//     echo json_encode(['error' => 'Acceso denegado. No autorizado.']);
-//     exit();
-// }
+if (!isset($_SESSION['rol']) || !in_array($_SESSION['rol'], ['admin', 'mesero'])) {
+    http_response_code(403);
+    echo json_encode(['error' => 'Acceso denegado. No autorizado.']);
+    exit();
+}
 
 // 2. Importar el modelo Producto
 require_once __DIR__ . '/../modelos/Producto.php';
@@ -42,7 +41,6 @@ switch ($accion) {
 
     // RF-02 y RF-03: Registrar nuevo o actualizar existente
     case 'guardar':
-        // Leer el cuerpo JSON enviado desde fetch
         $cuerpo = file_get_contents('php://input');
         $datos = json_decode($cuerpo, true);
 
@@ -59,7 +57,7 @@ switch ($accion) {
         $precio      = filter_var($datos['precio'] ?? null, FILTER_VALIDATE_FLOAT);
         $disponible  = !empty($datos['disponible']) ? 1 : 0;
 
-        // RF-07: Validaciones obligatorias de campos y precio positivo
+        // RF-07: Validaciones obligatorias
         if (empty($nombre) || empty($categoria) || $precio === false || $precio <= 0) {
             http_response_code(422);
             echo json_encode(['error' => 'Verifica los campos obligatorios: nombre, categoría y precio válido (> 0)']);
@@ -68,10 +66,8 @@ switch ($accion) {
 
         try {
             if ($id) {
-                // Editar producto existente
                 $resultado = $productoModelo->actualizar($id, $nombre, $descripcion, $precio, $categoria, $disponible);
             } else {
-                // Registrar nuevo producto
                 $resultado = $productoModelo->registrar($nombre, $descripcion, $precio, $categoria, $disponible);
             }
 
@@ -82,7 +78,7 @@ switch ($accion) {
         }
         break;
 
-    // RF-04 y RF-05: Alternar disponibilidad (productos activos / de temporada)
+    // RF-04 y RF-05: Alternar disponibilidad
     case 'toggle':
         $id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
         $estadoActual = filter_input(INPUT_GET, 'estado', FILTER_VALIDATE_INT);
@@ -101,6 +97,32 @@ switch ($accion) {
             echo json_encode(['error' => 'Error al actualizar disponibilidad: ' . $e->getMessage()]);
         }
         break;
+
+    // Eliminar producto directamente de la base de datos
+    case 'eliminar':
+        // Limpiar cualquier salida previa que rompa el JSON
+        if (ob_get_length()) ob_clean();
+
+        $id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
+
+        if (!$id) {
+            http_response_code(400);
+            echo json_encode(['exito' => false, 'error' => 'ID de producto inválido o no recibido']);
+            exit();
+        }
+
+        try {
+            $resultado = $productoModelo->eliminar($id);
+            echo json_encode(['exito' => (bool)$resultado]);
+        } catch (PDOException $e) {
+            http_response_code(409);
+            // Captura si existe una foreign key hacia comandas/pedidos
+            echo json_encode(['exito' => false, 'error' => 'No se puede eliminar: el producto está referenciado en pedidos o comandas. Desactívalo en su lugar.']);
+        } catch (Throwable $e) {
+            http_response_code(500);
+            echo json_encode(['exito' => false, 'error' => $e->getMessage()]);
+        }
+        exit();
 
     default:
         http_response_code(400);
