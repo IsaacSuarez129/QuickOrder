@@ -406,22 +406,33 @@ case 'mesas_disponibles':
             $pdo->beginTransaction();
 
             // Comprobar que la comanda exista
-            $stmtExiste = $pdo->prepare("
-                SELECT id
-                FROM comandas
-                WHERE id = :id
-                FOR UPDATE
-            ");
+           
+ // Comprobar que la comanda exista y esté pendiente
+$stmtExiste = $pdo->prepare("
+    SELECT id, estado
+    FROM comandas
+    WHERE id = :id
+    FOR UPDATE
+");
 
-            $stmtExiste->execute([
-                ':id' => $comandaId
-            ]);
+$stmtExiste->execute([
+    ':id' => $comandaId
+]);
 
-            if (!$stmtExiste->fetch(PDO::FETCH_ASSOC)) {
-                throw new Exception(
-                    'La comanda que intentas editar no existe'
-                );
-            }
+$comanda = $stmtExiste->fetch(PDO::FETCH_ASSOC);
+
+if (!$comanda) {
+    throw new Exception(
+        'La comanda que intentas editar no existe'
+    );
+}
+
+if ($comanda['estado'] !== 'Pendiente') {
+    throw new Exception(
+        'Solo se pueden editar comandas que estén pendientes'
+    );
+}
+
 
             // Eliminar los detalles anteriores
             $stmtBorrar = $pdo->prepare("

@@ -24,6 +24,7 @@ verificarAcceso(['mesero', 'admin']);
     <!-- Barra de acciones: Ver Menú a la izquierda y Dropdown a la derecha en la misma línea -->
     <div class="qo-acciones-admin btns_caja-menu">
       <a href="../menu/menu.php" class="qo-btn qo-btn-light">Ver Menú</a>
+      <a href="nueva_comanda.php" class="qo-btn qo-btn-light">+ Nueva comanda</a>
 
       <div class="qo-user-dropdown">
         <button type="button" class="qo-role-btn" id="btnDropdownUsuario" aria-expanded="false" aria-haspopup="true">

@@ -1,119 +1,250 @@
+
 document.addEventListener("DOMContentLoaded", () => {
   const contenedor = document.getElementById("contenedor-comandas");
   const btnRefrescar = document.getElementById("btnRefrescarPedidos");
   const botonesFiltro = document.querySelectorAll(".btn-filtro");
 
+  const API = "../../controladores/ControladorCocina.php";
+
   let filtroActivo = "todos";
   let listaComandas = [];
+  let actualizando = false;
 
-  // Transforma fecha a hora 12h y calcula minutos transcurridos
+  // Convierte los estados de MySQL a identificadores para los filtros.
+  function normalizarEstado(estado) {
+    const estados = {
+      "Pendiente": "pendiente",
+      "En preparación": "en_preparacion",
+      "Listo": "listo"
+    };
+
+    return estados[estado] || estado;
+  }
+
+  // Formatea fecha y calcula minutos transcurridos.
   function formatearTiempo(fechaStr) {
     if (!fechaStr) return { minutos: 0, hora: "--:--" };
-    const fecha = new Date(fechaStr);
-    const ahora = new Date();
-    const minutos = Math.max(0, Math.floor((ahora - fecha) / 60000));
 
-    let h = fecha.getHours();
-    const m = String(fecha.getMinutes()).padStart(2, "0");
-    const ampm = h >= 12 ? "PM" : "AM";
-    h = h % 12 || 12;
-    const hora = `${String(h).padStart(2, "0")}:${m} ${ampm}`;
+    // MySQL devuelve DATETIME como "YYYY-MM-DD HH:mm:ss".
+    const fecha = new Date(fechaStr.replace(" ", "T"));
+
+    if (Number.isNaN(fecha.getTime())) {
+      return { minutos: 0, hora: "--:--" };
+    }
+
+    const ahora = new Date();
+    const minutos = Math.max(
+      0,
+      Math.floor((ahora - fecha) / 60000)
+    );
+
+    const hora = fecha.toLocaleTimeString("es-MX", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true
+    });
 
     return { minutos, hora };
   }
 
-  // Pinta las tarjetas en pantalla
-  function renderizar() {
-    contenedor.innerHTML = "";
+  // Muestra mensajes dentro del tablero.
+  function mostrarMensaje(texto) {
+    contenedor.replaceChildren();
 
-    const filtradas = listaComandas.filter((c) => {
+    const mensaje = document.createElement("p");
+    mensaje.style.gridColumn = "1 / -1";
+    mensaje.style.textAlign = "center";
+    mensaje.textContent = texto;
+
+    contenedor.appendChild(mensaje);
+  }
+
+  // Actualiza los contadores.
+  function actualizarContadores() {
+    document.getElementById("cont-todos").textContent =
+      listaComandas.length;
+
+    document.getElementById("cont-pendientes").textContent =
+      listaComandas.filter(
+        c => normalizarEstado(c.estado) === "pendiente"
+      ).length;
+
+    document.getElementById("cont-preparacion").textContent =
+      listaComandas.filter(
+        c => normalizarEstado(c.estado) === "en_preparacion"
+      ).length;
+  }
+
+  // Construye las tarjetas.
+  function renderizar() {
+    contenedor.replaceChildren();
+    actualizarContadores();
+
+    const filtradas = listaComandas.filter(c => {
       if (filtroActivo === "todos") return true;
-      return c.estado === filtroActivo;
+      return normalizarEstado(c.estado) === filtroActivo;
     });
 
-    // Actualizar contadores
-    document.getElementById("cont-todos").textContent = listaComandas.length;
-    document.getElementById("cont-pendientes").textContent = listaComandas.filter((c) => c.estado === "pendiente").length;
-    document.getElementById("cont-preparacion").textContent = listaComandas.filter((c) => c.estado === "en_preparacion").length;
-
     if (filtradas.length === 0) {
-      contenedor.innerHTML = "<p style='grid-column: 1/-1; text-align: center; color: #888;'>No hay pedidos pendientes en esta sección.</p>";
+      mostrarMensaje("No hay pedidos en esta sección.");
       return;
     }
 
-    filtradas.forEach((c) => {
+    filtradas.forEach(c => {
+      const estado = normalizarEstado(c.estado);
+      const esPendiente = estado === "pendiente";
+      const esPreparacion = estado === "en_preparacion";
+
       const { minutos, hora } = formatearTiempo(c.enviada_en);
-      const esPendiente = c.estado === "pendiente";
 
       const tarjeta = document.createElement("div");
-      tarjeta.className = `tarjeta-ticket ${c.estado}`;
+      tarjeta.className = `tarjeta-ticket ${estado}`;
 
-      const platillosHtml = (c.platillos || [])
-        .map(
-          (p) => `
-            <li>
-              <span class="item-cant">${p.cantidad}x</span>
-              <div class="item-info">
-                <span class="item-nombre">${p.nombre}</span>
-                ${p.observaciones ? `<span class="item-obs">⚠️ ${p.observaciones}</span>` : ""}
-              </div>
-            </li>
-          `
-        )
-        .join("");
+      const encabezado = document.createElement("div");
+      encabezado.className = "ticket-header";
 
-      tarjeta.innerHTML = `
-        <div class="ticket-header">
-          <div class="header-izq">
-            <h3 class="ticket-mesa">🪑 ${c.mesa ? "Mesa " + c.mesa : "Para Llevar"}</h3>
-            <div class="ticket-orden">Order #${c.folio || c.id}</div>
-            <div class="ticket-hora">${hora}</div>
-          </div>
-          <div class="header-der">
-            <span class="badge-tipo">${c.tipo_pedido || "Dine In"}</span>
-            <span class="ticket-tiempo">${minutos} mins</span>
-          </div>
-        </div>
+      const izquierda = document.createElement("div");
+      izquierda.className = "header-izq";
 
-        <div class="ticket-body">
-          <ul class="lista-items">
-            ${platillosHtml}
-          </ul>
-        </div>
+      const titulo = document.createElement("h3");
+      titulo.className = "ticket-mesa";
+      titulo.textContent = c.mesa
+        ? `🪑 Mesa ${c.mesa}`
+        : "🛍️ Para llevar";
 
-        <div class="ticket-footer">
-          <button type="button" class="btn-kds ${esPendiente ? "activo" : "bloqueado"}" 
-                  ${esPendiente ? `onclick="actualizarEstadoComanda(${c.id}, 'en_preparacion')"` : "disabled"}>
-            Start
-          </button>
-          <button type="button" class="btn-kds ${!esPendiente ? "activo" : "bloqueado"}" 
-                  ${!esPendiente ? `onclick="actualizarEstadoComanda(${c.id}, 'listo')"` : "disabled"}>
-            Finish
-          </button>
-        </div>
-      `;
+      const folio = document.createElement("div");
+      folio.className = "ticket-orden";
+      folio.textContent = `Orden #${c.folio || c.id}`;
 
+      const horaTexto = document.createElement("div");
+      horaTexto.className = "ticket-hora";
+      horaTexto.textContent = hora;
+
+      izquierda.append(titulo, folio, horaTexto);
+
+      const derecha = document.createElement("div");
+      derecha.className = "header-der";
+
+      const tipo = document.createElement("span");
+      tipo.className = "badge-tipo";
+      tipo.textContent = c.tipo_pedido === "para_llevar"
+        ? "Para llevar"
+        : "En mesa";
+
+      const tiempo = document.createElement("span");
+      tiempo.className = "ticket-tiempo";
+      tiempo.textContent = `${minutos} min`;
+
+      derecha.append(tipo, tiempo);
+      encabezado.append(izquierda, derecha);
+
+      const cuerpo = document.createElement("div");
+      cuerpo.className = "ticket-body";
+
+      const lista = document.createElement("ul");
+      lista.className = "lista-items";
+
+      (c.platillos || []).forEach(p => {
+        const item = document.createElement("li");
+
+        const cantidad = document.createElement("span");
+        cantidad.className = "item-cant";
+        cantidad.textContent = `${p.cantidad}x`;
+
+        const informacion = document.createElement("div");
+        informacion.className = "item-info";
+
+        const nombre = document.createElement("span");
+        nombre.className = "item-nombre";
+        nombre.textContent = p.nombre;
+
+        informacion.appendChild(nombre);
+
+        if (p.observaciones) {
+          const observaciones = document.createElement("span");
+          observaciones.className = "item-obs";
+          observaciones.textContent = `⚠️ ${p.observaciones}`;
+          informacion.appendChild(observaciones);
+        }
+
+        item.append(cantidad, informacion);
+        lista.appendChild(item);
+      });
+
+      cuerpo.appendChild(lista);
+
+      const pie = document.createElement("div");
+      pie.className = "ticket-footer";
+
+      const botonIniciar = document.createElement("button");
+      botonIniciar.type = "button";
+      botonIniciar.className =
+        `btn-kds ${esPendiente ? "activo" : "bloqueado"}`;
+      botonIniciar.textContent = "Iniciar preparación";
+      botonIniciar.disabled = !esPendiente;
+
+      botonIniciar.addEventListener("click", () => {
+        actualizarEstadoComanda(c.id, "En preparación");
+      });
+
+      const botonFinalizar = document.createElement("button");
+      botonFinalizar.type = "button";
+      botonFinalizar.className =
+        `btn-kds ${esPreparacion ? "activo" : "bloqueado"}`;
+      botonFinalizar.textContent = "Marcar como listo";
+      botonFinalizar.disabled = !esPreparacion;
+
+      botonFinalizar.addEventListener("click", () => {
+        actualizarEstadoComanda(c.id, "Listo");
+      });
+
+      pie.append(botonIniciar, botonFinalizar);
+      tarjeta.append(encabezado, cuerpo, pie);
       contenedor.appendChild(tarjeta);
     });
   }
 
-  // Consulta al backend
+  // Consulta las comandas reales.
   async function consultarPedidos() {
+    if (actualizando) return;
+    actualizando = true;
+
     try {
-      const resp = await fetch("../../controladores/ControladorCocina.php?accion=obtener_pendientes");
-      listaComandas = await resp.json();
+      const respuesta = await fetch(
+        `${API}?accion=obtener_pendientes`,
+        { credentials: "same-origin" }
+      );
+
+      const datos = await respuesta.json();
+
+      if (!respuesta.ok || datos.exito !== true) {
+        throw new Error(
+          datos.error || "No se pudieron consultar las comandas."
+        );
+      }
+
+      if (!Array.isArray(datos.comandas)) {
+        throw new Error("La respuesta no contiene una lista de comandas.");
+      }
+
+      listaComandas = datos.comandas;
       renderizar();
-    } catch (err) {
-      console.error("Error al obtener pedidos:", err);
+
+    } catch (error) {
+      console.error("Error al obtener pedidos:", error);
+      mostrarMensaje(error.message);
+    } finally {
+      actualizando = false;
     }
   }
 
-  // Eventos de filtros
-  botonesFiltro.forEach((btn) => {
-    btn.addEventListener("click", () => {
-      botonesFiltro.forEach((b) => b.classList.remove("activo"));
-      btn.classList.add("activo");
-      filtroActivo = btn.getAttribute("data-filtro");
+  // Filtros del tablero.
+  botonesFiltro.forEach(boton => {
+    boton.addEventListener("click", () => {
+      botonesFiltro.forEach(b => b.classList.remove("activo"));
+      boton.classList.add("activo");
+
+      filtroActivo = boton.dataset.filtro;
       renderizar();
     });
   });
@@ -122,20 +253,43 @@ document.addEventListener("DOMContentLoaded", () => {
     btnRefrescar.addEventListener("click", consultarPedidos);
   }
 
-  // Carga inicial y Short Polling cada 4 segundos
   consultarPedidos();
   setInterval(consultarPedidos, 4000);
+
+  // Permite refrescar la pantalla después de cambiar el estado.
+  window.consultarPedidosCocina = consultarPedidos;
 });
 
-// Función global invocada por los botones Start y Finish
+// Actualiza el estado en el backend.
 async function actualizarEstadoComanda(comandaId, nuevoEstado) {
   try {
-    await fetch("../../controladores/ControladorCocina.php?accion=actualizar_estado", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ comanda_id: comandaId, nuevo_estado: nuevoEstado }),
-    });
-  } catch (err) {
-    console.error("Error al actualizar estado:", err);
+    const respuesta = await fetch(
+      "../../controladores/ControladorCocina.php?accion=actualizar_estado",
+      {
+        method: "POST",
+        credentials: "same-origin",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          comanda_id: comandaId,
+          nuevo_estado: nuevoEstado
+        })
+      }
+    );
+
+    const datos = await respuesta.json();
+
+    if (!respuesta.ok || datos.exito !== true) {
+      throw new Error(
+        datos.error || "No se pudo actualizar el estado."
+      );
+    }
+
+    if (window.consultarPedidosCocina) {
+      await window.consultarPedidosCocina();
+    }
+
+  } catch (error) {
+    console.error("Error al actualizar la comanda:", error);
+    alert(error.message);
   }
 }
