@@ -25,6 +25,7 @@ verificarAcceso(['mesero', 'admin']);
     <div class="qo-acciones-admin btns_caja-menu">
       <a href="../menu/menu.php" class="qo-btn qo-btn-light">Ver Menú</a>
       <a href="nueva_comanda.php" class="qo-btn qo-btn-light">+ Nueva comanda</a>
+      <a href="gestionar_comandas.php" class="qo-btn qo-btn-light">Gestionar comandas</a>
 
       <div class="qo-user-dropdown">
         <button type="button" class="qo-role-btn" id="btnDropdownUsuario" aria-expanded="false" aria-haspopup="true">
@@ -45,6 +46,26 @@ verificarAcceso(['mesero', 'admin']);
         </div>
       </div>
     </div>
+
+    <!-- Gestión manual de mesas ocupadas -->
+    <section class="bloque-blanco sombra mesas-ocupadas-panel">
+      <div class="mesas-panel-cabecera">
+        <div>
+          <h2>Mesas ocupadas</h2>
+          <p>Libera la mesa cuando los clientes se hayan retirado y no tenga comandas activas.</p>
+        </div>
+        <button type="button" class="btn-actualizar-mesas" id="btnActualizarMesas">Actualizar mesas</button>
+      </div>
+      <p id="mensajeMesas" class="mensaje-mesas" role="status">Cargando mesas ocupadas…</p>
+      <div class="tabla-scroll">
+        <table class="tabla-caja">
+          <thead>
+            <tr><th>Mesa</th><th>Capacidad</th><th>Comandas activas</th><th>Acción</th></tr>
+          </thead>
+          <tbody id="cuerpoMesasOcupadas"></tbody>
+        </table>
+      </div>
+    </section>
 
     <!-- 1. Métricas rápidas del turno -->
     <section class="caja-resumen">
@@ -160,5 +181,6 @@ verificarAcceso(['mesero', 'admin']);
 
   <!-- Script para la interacción del dropdown y confirmación -->
   <script src="../../publico/js/dropdown_usuario.js"></script>
+  <script src="../../publico/js/mesas_caja.js"></script>
 </body>
 </html>

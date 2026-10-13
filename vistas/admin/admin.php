@@ -49,6 +49,15 @@ verificarAcceso(['admin']);
             📊 - Resumen General
           </button>
         </li>
+        
+        
+<li>
+  <button type="button" class="sidebar-btn" data-target="vista-caja">
+    💵 - Caja y Comandas
+  </button>
+</li>
+
+
         <li>
           <button type="button" class="sidebar-btn" data-target="vista-menu">
             🍽️ - Menú y Catálogo
@@ -102,6 +111,23 @@ verificarAcceso(['admin']);
           </div>
         </div>
       </section>
+       
+<!-- VISTA: Caja y Comandas -->
+<section id="vista-caja" class="modulo-seccion">
+  <div class="content-card">
+    <h2 class="content-header-title">Caja y Comandas</h2>
+    <p class="content-description">
+      Consulta las comandas y accede a las funciones de Caja.
+    </p>
+
+    <iframe
+      src="../caja/caja.php"
+      title="Módulo de Caja y Comandas"
+      style="display:block; width:100%; height:1100px; border:0; border-radius:10px;"
+      loading="lazy">
+    </iframe>
+  </div>
+</section>
 
       <!-- 2. VISTA: Gestión del Menú -->
       <section id="vista-menu" class="modulo-seccion">

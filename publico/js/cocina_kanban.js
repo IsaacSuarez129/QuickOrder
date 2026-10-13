@@ -15,7 +15,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const estados = {
       "Pendiente": "pendiente",
       "En preparación": "en_preparacion",
-      "Listo": "listo"
+      "Listo": "listo",
+      "Cancelado": "cancelado"
     };
 
     return estados[estado] || estado;
@@ -94,11 +95,13 @@ document.addEventListener("DOMContentLoaded", () => {
       const estado = normalizarEstado(c.estado);
       const esPendiente = estado === "pendiente";
       const esPreparacion = estado === "en_preparacion";
+      const esCancelada = estado === "cancelado";
 
       const { minutos, hora } = formatearTiempo(c.enviada_en);
 
       const tarjeta = document.createElement("div");
       tarjeta.className = `tarjeta-ticket ${estado}`;
+      if (esCancelada) tarjeta.classList.add("ticket-cancelado");
 
       const encabezado = document.createElement("div");
       encabezado.className = "ticket-header";
@@ -133,7 +136,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const tiempo = document.createElement("span");
       tiempo.className = "ticket-tiempo";
-      tiempo.textContent = `${minutos} min`;
+      tiempo.textContent = esCancelada ? "CANCELADO" : `${minutos} min`;
 
       derecha.append(tipo, tiempo);
       encabezado.append(izquierda, derecha);
@@ -180,7 +183,7 @@ document.addEventListener("DOMContentLoaded", () => {
       botonIniciar.type = "button";
       botonIniciar.className =
         `btn-kds ${esPendiente ? "activo" : "bloqueado"}`;
-      botonIniciar.textContent = "Iniciar preparación";
+      botonIniciar.textContent = esCancelada ? "Comanda cancelada" : "Iniciar preparación";
       botonIniciar.disabled = !esPendiente;
 
       botonIniciar.addEventListener("click", () => {
@@ -191,7 +194,7 @@ document.addEventListener("DOMContentLoaded", () => {
       botonFinalizar.type = "button";
       botonFinalizar.className =
         `btn-kds ${esPreparacion ? "activo" : "bloqueado"}`;
-      botonFinalizar.textContent = "Marcar como listo";
+      botonFinalizar.textContent = esCancelada ? "No preparar" : "Marcar como listo";
       botonFinalizar.disabled = !esPreparacion;
 
       botonFinalizar.addEventListener("click", () => {

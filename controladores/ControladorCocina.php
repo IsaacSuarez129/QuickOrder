@@ -42,6 +42,7 @@ try {
                 FROM comandas c
                 LEFT JOIN mesas m ON c.mesa_id = m.id
                 WHERE c.estado IN ('Pendiente', 'En preparación')
+                   OR (c.estado = 'Cancelado' AND c.fecha_registro >= NOW() - INTERVAL 10 MINUTE)
                 ORDER BY c.enviada_en ASC, c.id ASC";
 
         $stmt = $conexion->prepare($sql);

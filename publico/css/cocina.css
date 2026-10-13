@@ -220,3 +220,5 @@
   cursor: not-allowed;
   pointer-events: none;
 }
+/* Aviso temporal para que cocina detecte comandas canceladas recientemente. */
+.ticket-cancelado{border:2px solid #b42332!important;opacity:.88}.ticket-cancelado .ticket-header{background:#ffe3e5!important}.ticket-cancelado .ticket-tiempo{background:#b42332;color:#fff}

@@ -848,3 +848,31 @@ body.admin-body .cont_abajo {
   background-color: var(--verde);
   color: var(--blanco);
 }
+
+
+/* Gestión manual de mesas ocupadas */
+.mesas-ocupadas-panel {
+  margin-bottom: 2rem;
+}
+.mesas-panel-cabecera {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+.mesas-panel-cabecera h2 { margin: 0 0 .5rem; }
+.mesas-panel-cabecera p { margin: 0; color: #666; }
+.btn-actualizar-mesas, .btn-liberar-mesa {
+  border: 0;
+  border-radius: 6px;
+  padding: .65rem .9rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+.btn-actualizar-mesas { background: #f1e8ec; color: #6e1934; }
+.btn-liberar-mesa { background: #741b36; color: #fff; }
+.btn-liberar-mesa:disabled { opacity: .5; cursor: not-allowed; }
+.mensaje-mesas { color: #555; margin: 1rem 0; }
+.mensaje-mesas.error { color: #982525; }
+.mensaje-mesas.exito { color: #176534; }
