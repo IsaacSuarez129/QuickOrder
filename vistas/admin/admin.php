@@ -1,7 +1,11 @@
 <?php
 require_once "../../controladores/Controlador_seguridad.php";
-// Solo el rol de admin tiene permiso aquí
+// El dashboard administrativo es exclusivo para administradores.
 verificarAcceso(['admin']);
+if (($_SESSION['rol'] ?? '') !== 'admin') {
+    header('Location: ../cocina/cocina.php');
+    exit();
+}
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -56,6 +60,13 @@ verificarAcceso(['admin']);
     💵 - Caja y Comandas
   </button>
 </li>
+        <?php if (($_SESSION['rol'] ?? '') === 'admin'): ?>
+        <li>
+          <button type="button" class="sidebar-btn" data-target="vista-cocina">
+            👨‍🍳 - Monitor de Cocina
+          </button>
+        </li>
+        <?php endif; ?>
 
 
         <li>
@@ -129,6 +140,24 @@ verificarAcceso(['admin']);
   </div>
 </section>
 
+      <!-- VISTA: Monitor de Cocina (exclusiva del administrador dentro del dashboard) -->
+      <?php if (($_SESSION['rol'] ?? '') === 'admin'): ?>
+      <section id="vista-cocina" class="modulo-seccion">
+        <div class="content-card">
+          <h2 class="content-header-title">Monitor de Cocina</h2>
+          <p class="content-description">
+            Consulta las comandas pendientes y en preparación, y actualiza su estado desde el panel de cocina.
+          </p>
+          <iframe
+            src="../cocina/cocina.php"
+            title="Monitor de Cocina"
+            style="display:block; width:100%; height:1100px; border:0; border-radius:10px;"
+            loading="lazy">
+          </iframe>
+        </div>
+      </section>
+      <?php endif; ?>
+
       <!-- 2. VISTA: Gestión del Menú -->
       <section id="vista-menu" class="modulo-seccion">
         <div class="content-card">
@@ -160,11 +189,9 @@ verificarAcceso(['admin']);
         <div class="content-card">
           <h2 class="content-header-title">Reportes Financieros y Ventas</h2>
           <p class="content-description">Consulta el balance de ventas de caja, consumos por mesa y estadísticas por platillo.</p>
-          <div class="btn-group-row">
-            <a href="../cocina/cocina.php" class="qo-btn qo-btn-light">
-              📊 Ver Reportes
-            </a>
-          </div>
+          <p class="content-description">
+            Este apartado está reservado para las funciones de consulta de reportes y ventas.
+          </p>
         </div>
       </section>
 

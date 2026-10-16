@@ -1,5 +1,7 @@
 <?php
 require_once "../../controladores/Controlador_seguridad.php";
+// El chef solo puede acceder al Monitor de Cocina; el administrador también puede
+// cargar esta vista dentro de su dashboard.
 verificarAcceso(['chef', 'admin']);
 ?>
 <!DOCTYPE html>
